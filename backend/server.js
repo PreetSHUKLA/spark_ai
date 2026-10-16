@@ -12,9 +12,14 @@ if (!apiKey) {
   throw new Error("GEMINI_API_KEY is missing from backend/.env");
 }
 
+const serviceAccountPath =
+  process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+  new URL("./service-account.json", import.meta.url);
+
 const serviceAccount = JSON.parse(
-  readFileSync(new URL("./service-account.json", import.meta.url), "utf8")
+  readFileSync(serviceAccountPath, "utf8")
 );
+
 
 initializeApp({ credential: cert(serviceAccount) });
 
