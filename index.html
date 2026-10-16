@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Search for Spark</title>
+
+  <style>
+
+    :root {
+
+      --green: #16865b;
+
+      --green-dark: #106644;
+
+      --ink: #17251f;
+
+      --muted: #68766f;
+
+      --line: #e5ece8;
+
+      --pale-green: #f1f8f4;
+
+    }
+
+    * {
+
+      box-sizing: border-box;
+
+    }
+
+    body {
+
+      min-height: 100vh;
+
+      margin: 0;
+
+      overflow-x: hidden;
+
+      color: var(--ink);
+
+      background: #fff;
+
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    }
+
+    [hidden] {
+
+      display: none !important;
+
+    }
+
+    #dot-canvas {
+
+      position: fixed;
+
+      z-index: 0;
+
+      inset: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      pointer-events: none;
+
+    }
+
+    .page {
+
+      position: relative;
+
+      z-index: 1;
+
+      display: flex;
+
+      min-height: 100vh;
+
+      flex-direction: column;
+
+    }
+
+    /* Instruction page */
+
+    .intro-main {
+
+      display: grid;
+
+      flex: 1;
+
+      place-items: center;
+
+      padding: 60px 20px;
+
+    }
+
+    .intro-content {
+
+      width: min(100%, 620px);
+
+      text-align: center;
+
+    }
+
+    .eyebrow {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      margin-bottom: 18px;
+
+      padding: 8px 12px;
+
+      border: 1px solid var(--line);
+
+      border-radius: 999px;
+
+      background: rgb(255 255 255 / 88%);
+
+      color: var(--green-dark);
+
+      font-size: 12px;
+
+      font-weight: 600;
+
+      letter-spacing: .04em;
+
+    }
+
+    .eyebrow-dot {
+
+      width: 7px;
+
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: #43b87f;
+
+      box-shadow: 0 0 0 4px #e5f5ec;
+
+    }
+
+    h1 {
+
+      margin: 0;
+
+      font-size: clamp(38px, 7vw, 62px);
+
+      font-weight: 700;
+
+      letter-spacing: -.055em;
+
+      line-height: 1.05;
+
+    }
+
+    h1 span {
+
+      color: var(--green);
+
+    }
+
+    .subtitle {
+
+      max-width: 440px;
+
+      margin: 17px auto 32px;
+
+      color: var(--muted);
+
+      font-size: 15px;
+
+      line-height: 1.7;
+
+    }
+
+    .intro-panel {
+
+      padding: clamp(24px, 5vw, 38px);
+
+      border: 1px solid var(--line);
+
+      border-radius: 20px;
+
+      background: rgb(255 255 255 / 94%);
+
+      box-shadow: 0 18px 55px rgb(23 72 48 / 7%);
+
+      text-align: left;
+
+    }
+
+    .instructions {
+
+      display: grid;
+
+      gap: 12px;
+
+      margin: 0;
+
+      padding: 0;
+
+      list-style: none;
+
+    }
+
+    .instructions li {
+
+      display: grid;
+
+      grid-template-columns: 34px 1fr;
+
+      gap: 13px;
+
+      align-items: start;
+
+      padding: 15px;
+
+      border: 1px solid #edf2ef;
+
+      border-radius: 13px;
+
+      background: #fcfdfc;
+
+      color: #495850;
+
+      font-size: 13px;
+
+      line-height: 1.65;
+
+    }
+
+    .number {
+
+      display: grid;
+
+      width: 30px;
+
+      height: 30px;
+
+      place-items: center;
+
+      border-radius: 9px;
+
+      background: var(--pale-green);
+
+      color: var(--green-dark);
+
+      font-size: 12px;
+
+      font-weight: 700;
+
+    }
+
+    .email-label {
+
+      display: block;
+
+      margin: 23px 0 8px;
+
+      color: #35443c;
+
+      font-size: 12px;
+
+      font-weight: 650;
+
+    }
+
+    .email-input {
+
+      width: 100%;
+
+      height: 48px;
+
+      padding: 0 14px;
+
+      border: 1px solid #dce6e0;
+
+      border-radius: 10px;
+
+      outline: none;
+
+      background: #fff;
+
+      color: var(--ink);
+
+      font: inherit;
+
+      font-size: 14px;
+
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+
+    }
+
+    .email-input:focus,
+
+    .answer-input:focus {
+
+      border-color: var(--green);
+
+      box-shadow: 0 0 0 4px rgb(22 134 91 / 10%);
+
+    }
+
+    .start-button,
+
+    .nav-button {
+
+      display: flex;
+
+      min-height: 49px;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 9px;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      background: var(--green);
+
+      color: #fff;
+
+      cursor: pointer;
+
+      font: inherit;
+
+      font-size: 14px;
+
+      font-weight: 650;
+
+      transition: background 160ms ease, transform 160ms ease;
+
+    }
+
+    .start-button {
+
+      position: relative;
+
+      width: 100%;
+
+      margin-top: 12px;
+
+      padding: 0 16px;
+
+      overflow: hidden;
+
+    }
+
+    .start-button:hover:not(:disabled),
+
+    .nav-button:hover:not(:disabled) {
+
+      transform: translateY(-1px);
+
+      background: var(--green-dark);
+
+    }
+
+    .start-button:disabled,
+
+    .nav-button:disabled {
+
+      cursor: wait;
+
+    }
+
+    .button-label {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      transition: opacity 150ms ease;
+
+    }
+
+    .start-button.animating .button-label {
+
+      opacity: 0;
+
+    }
+
+    .button-label span {
+
+      font-size: 17px;
+
+      line-height: 1;
+
+    }
+
+    .best-message {
+
+      position: absolute;
+
+      inset: 0;
+
+      display: grid;
+
+      place-items: center;
+
+      transform: translateX(-130%);
+
+      visibility: hidden;
+
+      white-space: nowrap;
+
+      pointer-events: none;
+
+    }
+
+    .start-button.animating .best-message {
+
+      visibility: visible;
+
+      animation: message-through-button 3.4s 2s cubic-bezier(.22, .68, .2, 1) both;
+
+    }
+
+    @keyframes message-through-button {
+
+      0% {
+
+        transform: translateX(-130%);
+
+        opacity: 0;
+
+      }
+
+      20% {
+
+        transform: translateX(0);
+
+        opacity: 1;
+
+      }
+
+      68% {
+
+        transform: translateX(0);
+
+        opacity: 1;
+
+      }
+
+      100% {
+
+        transform: translateX(130%);
+
+        opacity: 0;
+
+      }
+
+    }
+
+    /* Question and result pages */
+
+    .test-page {
+
+      width: min(100%, 1120px);
+
+      margin: 0 auto;
+
+      padding: 0 36px 48px;
+
+    }
+
+    .test-header {
+
+      display: flex;
+
+      min-height: 72px;
+
+      align-items: center;
+
+      border-bottom: 1px solid var(--line);
+
+    }
+
+    .spark-brand {
+
+      color: var(--green-dark);
+
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+
+      font-size: 23px;
+
+      font-weight: 850;
+
+      letter-spacing: .11em;
+
+      line-height: 1;
+
+      text-transform: uppercase;
+
+    }
+
+    .progress-area {
+
+      padding: 22px 0 0;
+
+    }
+
+    .progress-label {
+
+      display: block;
+
+      margin-bottom: 9px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+
+      font-weight: 550;
+
+    }
+
+    .progress-track {
+
+      height: 7px;
+
+      overflow: hidden;
+
+      border-radius: 999px;
+
+      background: #eaf1ed;
+
+    }
+
+    .progress-fill {
+
+      width: 20%;
+
+      height: 100%;
+
+      border-radius: inherit;
+
+      background: var(--green);
+
+      transition: width 250ms ease;
+
+    }
+
+    .question-area {
+
+      margin: 32px 0 0;
+
+      padding: 10px 0 0;
+
+    }
+
+    .question-number {
+
+      margin: 0 0 11px;
+
+      color: var(--green);
+
+      font-size: 12px;
+
+      font-weight: 700;
+
+      letter-spacing: .08em;
+
+      text-transform: uppercase;
+
+    }
+
+    .question-title {
+
+      margin: 0 0 14px;
+
+      font-size: clamp(23px, 4vw, 32px);
+
+      font-weight: 700;
+
+      letter-spacing: -.035em;
+
+      line-height: 1.25;
+
+    }
+
+    .question-text {
+
+      margin: 0;
+
+      color: #536159;
+
+      font-size: 15px;
+
+      line-height: 1.75;
+
+    }
+
+    .answer-label {
+
+      display: block;
+
+      margin: 26px 0 9px;
+
+      color: #35443c;
+
+      font-size: 13px;
+
+      font-weight: 650;
+
+    }
+
+    .answer-input {
+
+      display: block;
+
+      width: 100%;
+
+      min-height: 220px;
+
+      resize: vertical;
+
+      padding: 14px;
+
+      border: 1px solid #dce6e0;
+
+      border-radius: 11px;
+
+      outline: none;
+
+      background: rgb(255 255 255 / 92%);
+
+      color: var(--ink);
+
+      font: inherit;
+
+      font-size: 14px;
+
+      line-height: 1.65;
+
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+
+    }
+
+    .answer-meta {
+
+      display: flex;
+
+      justify-content: flex-end;
+
+      margin-top: 8px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+
+    }
+
+    .word-count.at-limit {
+
+      color: #a5572a;
+
+      font-weight: 650;
+
+    }
+
+    .navigation {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-top: 22px;
+
+    }
+
+    .nav-button {
+
+      min-width: 120px;
+
+      padding: 0 20px;
+
+    }
+
+    .nav-button.secondary {
+
+      border: 1px solid #dce6e0;
+
+      background: #fff;
+
+      color: var(--green-dark);
+
+    }
+
+    .nav-button.secondary:hover:not(:disabled) {
+
+      background: var(--pale-green);
+
+    }
+
+    .nav-button:disabled {
+
+      opacity: .45;
+
+      cursor: not-allowed;
+
+      transform: none;
+
+    }
+
+    .result-page {
+
+      padding: clamp(60px, 12vh, 120px) 20px;
+
+      text-align: center;
+
+    }
+
+    .thank-you {
+
+      margin: 0 0 12px;
+
+      color: var(--green-dark);
+
+      font-size: clamp(32px, 6vw, 48px);
+
+      font-weight: 750;
+
+      letter-spacing: -.04em;
+
+    }
+
+    .result-status {
+
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: 15px;
+
+      line-height: 1.7;
+
+    }
+
+    .score-panel {
+
+      width: min(100%, 400px);
+
+      margin: 32px auto 0;
+
+      padding: 30px;
+
+      border: 1px solid var(--line);
+
+      border-radius: 18px;
+
+      background: rgb(255 255 255 / 94%);
+
+      box-shadow: 0 18px 55px rgb(23 72 48 / 7%);
+
+    }
+
+    .score-caption {
+
+      margin: 0 0 10px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      font-weight: 600;
+
+    }
+
+    .score {
+
+      margin: 0;
+
+      color: var(--green);
+
+      font-size: 56px;
+
+      font-weight: 750;
+
+      letter-spacing: -.05em;
+
+      line-height: 1;
+
+    }
+
+    .score-out-of {
+
+      color: var(--muted);
+
+      font-size: 19px;
+
+      font-weight: 600;
+
+      letter-spacing: 0;
+
+    }
+
+    .demo-note {
+
+      margin: 18px 0 0;
+
+      color: #849189;
+
+      font-size: 12px;
+
+      line-height: 1.6;
+
+    }
+
+    .result-card {
+      padding: 64px 20px;
+      text-align: center;
+    }
+
+    .result-score {
+      color: var(--green);
+      font-size: clamp(40px, 8vw, 64px);
+      font-weight: 750;
+      letter-spacing: -.04em;
+    }
+
+    #result-details {
+      display: inline-grid;
+      gap: 8px;
+      margin-top: 16px;
+      padding-left: 24px;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    footer {
+
+      padding: 18px 24px 26px;
+
+      color: #849189;
+
+      font-size: 11px;
+
+      text-align: center;
+
+    }
+
+    @media (max-width: 560px) {
+
+      .test-page {
+
+        padding-right: 20px;
+
+        padding-left: 20px;
+
+      }
+
+      .question-area {
+
+        margin-top: 24px;
+
+      }
+
+      .nav-button {
+
+        min-width: 0;
+
+        flex: 1;
+
+      }
+
+      .spark-brand {
+
+        font-size: 21px;
+
+      }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+
+      *::before,
+
+      *::after {
+
+        scroll-behavior: auto !important;
+
+        transition-duration: .01ms !important;
+
+      }
+
+      .start-button.animating .best-message {
+
+        animation-duration: .01ms;
+
+        animation-delay: 0s;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <canvas id="dot-canvas" aria-hidden="true"></canvas>
+
+  <div class="page">
+
+    <main class="intro-main" id="intro-page">
+
+      <div class="intro-content">
+
+        <div class="eyebrow">
+
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+
+          YOUR CHALLENGE STARTS HERE
+
+        </div>
+
+        <h1>Search for <span>Spark.</span></h1>
+
+        <p class="subtitle">
+
+          Read the instructions carefully before you begin. Take your time and explain your thinking clearly.
+
+        </p>
+
+        <section class="intro-panel" aria-label="Test instructions">
+
+          <ol class="instructions">
+
+            <li>
+
+              <span class="number">01</span>
+
+              <span>Use of AI is strictly prohibited. Any indication of AI-generated answers may lead to disqualification.</span>
+
+            </li>
+
+            <li>
+
+              <span class="number">02</span>
+
+              <span>Explain the formula for winning in your own words, clearly enough for someone new to the topic to understand.</span>
+
+            </li>
+
+          </ol>
+
+          <form id="start-form">
+
+            <label class="email-label" for="email">Email address</label>
+
+            <input
+
+              class="email-input"
+
+              id="email"
+
+              name="email"
+
+              type="email"
+
+              placeholder="you@example.com"
+
+              autocomplete="email"
+
+              required
+
+            >
+
+            <button class="start-button" id="start-button" type="submit">
+
+              <span class="button-label">Start test <span aria-hidden="true">→</span></span>
+
+              <span class="best-message" id="best-message" aria-hidden="true">All the best!</span>
+
+            </button>
+
+          </form>
+
+        </section>
+
+      </div>
+
+    </main>
+
+    <section class="test-page" id="test-page" hidden>
+
+      <header class="test-header">
+
+        <div class="spark-brand">Spark</div>
+
+      </header>
+
+      <div class="progress-area" aria-label="Test progress">
+
+        <span class="progress-label" id="progress-label">Question 1 of 5</span>
+
+        <div class="progress-track">
+
+          <div class="progress-fill" id="progress-fill"></div>
+
+        </div>
+
+      </div>
+
+      <div class="question-area" id="question-area">
+
+        <p class="question-number" id="question-number">Question 1</p>
+
+        <h2 class="question-title" id="question-title"></h2>
+
+        <p class="question-text" id="question-text"></p>
+
+        <label class="answer-label" for="answer-input">Your answer</label>
+
+        <textarea
+
+          class="answer-input"
+
+          id="answer-input"
+
+          placeholder="Write your answer here..."
+
+          rows="8"
+
+          aria-describedby="word-count"
+
+        ></textarea>
+
+        <div class="answer-meta">
+
+          <span class="word-count" id="word-count" aria-live="polite">0 / 200 words</span>
+
+        </div>
+          <p id="submission-error" role="alert" hidden></p>
+
+        <nav class="navigation" aria-label="Question navigation">
+
+          <button class="nav-button secondary" id="back-button" type="button">← Back</button>
+
+          <button class="nav-button" id="next-button" type="button">Next →</button>
+
+        </nav>
+
+      </div>
+    </section>
+
+    <section id="result-page" class="test-page" hidden>
+      <header class="test-header">
+        <div class="spark-brand">Spark</div>
+      </header>
+
+      <div class="result-card">
+        <div class="eyebrow">TEST COMPLETE</div>
+        <h1>Thank you!</h1>
+        <p>Your answers have been evaluated.</p>
+        <p class="result-score" id="result-score">— / 100</p>
+        <ol id="result-details"></ol>
+      </div>
+    </section>
+
+    <footer id="intro-footer">Five questions. One chance to show your spark.</footer>
+
+  </div>
+
+  <script>
+
+    const questions = [
+
+      {
+
+        title: "Understanding the Code",
+
+        text: "Explain what the code is doing in under 200 words. Describe its overall workflow, the role of each component, and how the different components interact with one another. No need to mention technical details; explain it like I am five years old."
+
+      },
+
+      {
+
+        title: "Planner Agent — Analysis and Improved System Prompt",
+
+        text: "Analyze the system prompt used for the Planner Agent. Is it well-designed for its intended purpose? Identify its weaknesses, ambiguities, and potential failure cases. No need for improved prompt"
+
+      },
+
+      {
+
+        title: "Builder Agent — Analysis and Improved System Prompt",
+
+        text: "Analyze the system prompt used for the Builder Agent. Evaluate whether it provides clear instructions, handles edge cases, and generates reliable outputs.  No need for improved prompt"
+
+      },
+
+      {
+
+        title: "Reviewer Agent — Analysis and Improved System Prompt",
+
+        text: "Analyze the system prompt used for the Reviewer Agent. Evaluate its ability to detect errors, verify the Builder's output, and provide useful feedback. Identify its limitations and suggest improvements.  No need for improved prompt"
+
+      },
+
+      {
+
+        title: "Project Insights and Developer Recommendations",
+
+        text: "After examining the entire project, provide your insights into its architecture, implementation, and overall effectiveness. Identify bugs, design flaws, scalability limitations, security concerns, and other potential issues, wherever applicable. What should the developer improve, and what specific code changes, architectural modifications, or additional features would you recommend? Prioritize your recommendations based on their potential impact and explain why they matter."
+
+      }
+
+    ];
+
+    const canvas = document.getElementById("dot-canvas");
+
+    const context = canvas.getContext("2d");
+    
+
+    const spacing = 24;
+
+    const dots = [];
+
+    const pointer = { x: -1000, y: -1000 };
+
+    let canvasWidth = 0;
+
+    let canvasHeight = 0;
+
+    let animationFrame = null;
+
+    function drawDots() {
+
+      context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+      context.fillStyle = "#a9cdb8";
+
+      let needsAnotherFrame = false;
+
+      for (const dot of dots) {
+
+        const dx = dot.x - pointer.x;
+
+        const dy = dot.y - pointer.y;
+
+        const distance = Math.hypot(dx, dy);
+
+        const force = Math.max(0, 1 - distance / 115);
+
+        const push = force * 17;
+
+        const targetX = distance > 0 ? (dx / distance) * push : 0;
+
+        const targetY = distance > 0 ? (dy / distance) * push : 0;
+
+        dot.offsetX += (targetX - dot.offsetX) * 0.22;
+
+        dot.offsetY += (targetY - dot.offsetY) * 0.22;
+
+        if (
+
+          Math.abs(targetX - dot.offsetX) > 0.1 ||
+
+          Math.abs(targetY - dot.offsetY) > 0.1
+
+        ) {
+
+          needsAnotherFrame = true;
+
+        }
+
+        context.beginPath();
+
+        context.arc(dot.x + dot.offsetX, dot.y + dot.offsetY, 1.35, 0, Math.PI * 2);
+
+        context.fill();
+
+      }
+
+      if (needsAnotherFrame) {
+
+        animationFrame = requestAnimationFrame(drawDots);
+
+      } else {
+
+        animationFrame = null;
+
+      }
+
+    }
+
+    function scheduleDraw() {
+
+      if (animationFrame === null) {
+
+        animationFrame = requestAnimationFrame(drawDots);
+
+      }
+
+    }
+
+    function resizeCanvas() {
+
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      canvasWidth = window.innerWidth;
+
+      canvasHeight = window.innerHeight;
+
+      canvas.width = canvasWidth * pixelRatio;
+
+      canvas.height = canvasHeight * pixelRatio;
+
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+      dots.length = 0;
+
+      for (let y = spacing / 2; y < canvasHeight + spacing; y += spacing) {
+
+        for (let x = spacing / 2; x < canvasWidth + spacing; x += spacing) {
+
+          dots.push({ x, y, offsetX: 0, offsetY: 0 });
+
+        }
+
+      }
+
+      scheduleDraw();
+
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+
+    window.addEventListener("pointermove", (event) => {
+
+      pointer.x = event.clientX;
+
+      pointer.y = event.clientY;
+
+      scheduleDraw();
+
+    });
+
+    window.addEventListener("pointerleave", () => {
+
+      pointer.x = -1000;
+
+      pointer.y = -1000;
+
+      scheduleDraw();
+
+    });
+
+    resizeCanvas();
+
+    const introPage = document.getElementById("intro-page");
+
+    const introFooter = document.getElementById("intro-footer");
+
+    const testPage = document.getElementById("test-page");
+
+    const questionArea = document.getElementById("question-area");
+
+    const resultPage = document.getElementById("result-page");
+
+    const resultStatus = document.getElementById("result-status");
+
+    const scorePanel = document.getElementById("score-panel");
+
+    const startForm = document.getElementById("start-form");
+
+    const startButton = document.getElementById("start-button");
+
+    
+
+    const bestMessage = document.getElementById("best-message");
+
+    const questionNumber = document.getElementById("question-number");
+
+    const questionTitle = document.getElementById("question-title");
+
+    const questionText = document.getElementById("question-text");
+
+    const answerInput = document.getElementById("answer-input");
+
+    const wordCount = document.getElementById("word-count");
+
+    const progressLabel = document.getElementById("progress-label");
+
+    const progressFill = document.getElementById("progress-fill");
+
+    const backButton = document.getElementById("back-button");
+
+    const nextButton = document.getElementById("next-button");
+
+    const answers = Array(questions.length).fill("");
+
+    let currentQuestion = 0;
+
+    function countWords(text) {
+
+      const trimmed = text.trim();
+
+      return trimmed ? trimmed.split(/\s+/).length : 0;
+
+    }
+
+    function updateWordCount() {
+
+      const count = countWords(answerInput.value);
+
+      wordCount.textContent = `${count} / 200 words`;
+
+      wordCount.classList.toggle("at-limit", count >= 200);
+
+    }
+
+    function renderQuestion() {
+
+      const question = questions[currentQuestion];
+
+      const questionIndex = currentQuestion + 1;
+
+      const progress = (questionIndex / questions.length) * 100;
+
+      questionNumber.textContent = `Question ${questionIndex}`;
+
+      questionTitle.textContent = question.title;
+
+      questionText.textContent = question.text;
+
+      answerInput.value = answers[currentQuestion];
+
+      progressLabel.textContent = `Question ${questionIndex} of ${questions.length}`;
+
+      progressFill.style.width = `${progress}%`;
+
+      backButton.disabled = currentQuestion === 0;
+
+      nextButton.textContent = currentQuestion === questions.length - 1
+
+        ? "Finish test →"
+
+        : "Next →";
+
+      updateWordCount();
+
+    }
+
+    function showTest() {
+
+      introPage.hidden = true;
+
+      introFooter.hidden = true;
+
+      testPage.hidden = false;
+
+      questionArea.hidden = false;
+
+      resultPage.hidden = true;
+
+      renderQuestion();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    }
+
+    function showResults() {
+
+      questionArea.hidden = true;
+
+      resultPage.hidden = false;
+
+      resultStatus.textContent = "AI response is being prepared...";
+
+      scorePanel.hidden = true;
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      window.setTimeout(() => {
+
+        resultStatus.textContent = "Your test has been reviewed.";
+
+        scorePanel.hidden = false;
+
+      }, 5000);
+
+    }
+
+    startForm.addEventListener("submit", (event) => {
+
+      event.preventDefault();
+
+      if (!startForm.reportValidity()) {
+
+        return;
+
+      }
+
+      startButton.disabled = true;
+
+      startButton.classList.remove("animating");
+
+      void startButton.offsetWidth;
+
+      startButton.classList.add("animating");
+
+      bestMessage.addEventListener("animationend", () => {
+
+        startButton.disabled = false;
+
+        startButton.classList.remove("animating");
+
+        showTest();
+
+      }, { once: true });
+
+    });
+
+    answerInput.addEventListener("input", () => {
+
+      const words = answerInput.value.trim().split(/\s+/).filter(Boolean);
+
+      if (words.length > 200) {
+
+        answerInput.value = words.slice(0, 200).join(" ");
+
+      }
+
+      answers[currentQuestion] = answerInput.value;
+
+      updateWordCount();
+
+    });
+
+    backButton.addEventListener("click", () => {
+
+      answers[currentQuestion] = answerInput.value;
+
+      if (currentQuestion === 0) {
+
+        testPage.hidden = true;
+
+        introPage.hidden = false;
+
+        introFooter.hidden = false;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        return;
+
+      }
+
+      currentQuestion -= 1;
+
+      renderQuestion();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    });
+
+    nextButton.addEventListener("click", async () => {
+  answers[currentQuestion] = answerInput.value;
+
+  if (currentQuestion === questions.length - 1) {
+    const submissionError = document.getElementById("submission-error");
+
+    nextButton.disabled = true;
+    nextButton.textContent = "Evaluating…";
+    submissionError.hidden = true;
+
+    try {
+      const response = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: document.getElementById("email").value.trim(),
+          answers
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Could not evaluate your test.");
+      }
+
+      document.getElementById("result-score").textContent = `${result.score} / 100`;
+
+      const details = document.getElementById("result-details");
+      details.replaceChildren();
+
+      for (const item of result.questionScores) {
+        const row = document.createElement("li");
+        row.textContent = `Question ${item.questionNumber}: ${item.score} / 20`;
+        details.appendChild(row);
+      }
+
+      testPage.hidden = true;
+      resultPage.hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      submissionError.textContent =
+        error.message || "Evaluation failed. Please try again.";
+      submissionError.hidden = false;
+    } finally {
+      nextButton.disabled = false;
+      nextButton.textContent = "Finish test →";
+    }
+
+    return;
+  }
+
+  currentQuestion += 1;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+  </script>
+
+</body>
+
+</html>
