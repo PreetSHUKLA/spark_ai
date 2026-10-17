@@ -1049,7 +1049,7 @@
 
         <div class="answer-meta">
 
-          <span class="word-count" id="word-count" aria-live="polite">0 / 200 words</span>
+          <span class="word-count" id="word-count" aria-live="polite">0 / 400 words</span>
 
         </div>
           <p id="submission-error" role="alert" hidden></p>
@@ -1091,7 +1091,7 @@
 
         title: "Understanding the Code",
 
-        text: "Explain what the code is doing in under 200 words. Describe its overall workflow, the role of each component, and how the different components interact with one another. No need to mention technical details; explain it like I am five years old."
+        text: "Explain what the code is doing in under 400 words. Describe its overall workflow, the role of each component, and how the different components interact with one another. No need to mention technical details; explain it like I am five years old."
 
       },
 
@@ -1326,9 +1326,9 @@
 
       const count = countWords(answerInput.value);
 
-      wordCount.textContent = `${count} / 200 words`;
+      wordCount.textContent = `${count} / 400 words`;
 
-      wordCount.classList.toggle("at-limit", count >= 200);
+      wordCount.classList.toggle("at-limit", count >= 400);
 
     }
 
@@ -1438,9 +1438,9 @@
 
       const words = answerInput.value.trim().split(/\s+/).filter(Boolean);
 
-      if (words.length > 200) {
+      if (words.length > 400) {
 
-        answerInput.value = words.slice(0, 200).join(" ");
+        answerInput.value = words.slice(0, 400).join(" ");
 
       }
 
