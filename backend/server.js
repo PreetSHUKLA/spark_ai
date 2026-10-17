@@ -113,9 +113,9 @@ app.post("/api/submit", async (request, response) => {
 
   for (const answer of answers) {
     const wordCount = answer.trim() ? answer.trim().split(/\s+/).length : 0;
-    if (wordCount > 200) {
+    if (wordCount > 400) {
       return response.status(400).json({
-        error: "Each answer must be 200 words or fewer."
+        error: "Each answer must be 400 words or fewer."
       });
     }
   }
